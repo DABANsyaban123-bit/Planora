@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruang kerja — Planora</title>
+  <meta name="description" content="Ruang kerja Planora untuk jadwal harian, action plan, kalender, dan target jangka panjang. Mode Personal dan Business.">
+  <meta name="theme-color" content="#f5f1e8">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23ff5a1f'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11.5' stroke='%23fff8f3' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=6">
+</head>
+<body>  
+
+  <div class="workspace">
+    <aside class="side" id="side">
+      <a class="logo" href="./index.html" data-i18n-aria="side.home" aria-label="Planora — beranda">
+        <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <rect width="32" height="32" rx="9"/>
+          <path d="M9 16.5l4.5 4.5L23 11.5"/>
+        </svg>
+        Planora
+      </a>
+
+      <p class="side-kicker" id="sideKicker">Ruang kerja</p>
+      <nav class="side-nav" id="sideNav" data-i18n-aria="side.workspace" aria-label="Ruang kerja"></nav>
+
+      <div class="side-mode">
+        <p class="side-label" data-i18n="side.mode">Mode</p>
+        <button class="mode-tag" type="button" data-nav="profile" aria-label="Mode aktif. Ubah di profil.">
+          <span class="mode-tag-dot" aria-hidden="true"></span>
+          <span class="mode-tag-text">
+            <strong id="modeTag">Personal</strong>
+            <small data-i18n="side.changeInProfile">Ubah di profil</small>
+          </span>
+        </button>
+      </div>
+
+      <div class="side-foot">
+        <div class="side-user">
+          <span class="avatar" id="avatar" aria-hidden="true">T</span>
+          <div class="side-user-meta">
+            <strong id="userName">Tamu</strong>
+            <span id="userEmail">Belum masuk</span>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm btn-block" id="logoutBtn" type="button">Masuk</button>
+      </div>
+    </aside>
+
+    <main class="work">
+      <header class="work-bar">
+        <button class="side-toggle" id="sideToggle" type="button" aria-label="Buka menu" aria-expanded="false" aria-controls="side">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="work-bar-title">
+          <p id="barDate"></p>
+          <strong id="barView">Hari ini</strong>
+        </div>
+        <button class="btn btn-sm" id="primaryAction" type="button">
+          <span id="primaryLabel">Tambah blok</span>
+          <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </header>
+
+      <div id="viewRoot"></div>
+
+      <p class="work-foot">
+        <span data-i18n="foot.demo">Demo antarmuka — data tersimpan di peramban ini.</span>
+        <button class="text-btn" id="resetBtn" type="button" data-i18n="foot.reset">Kembalikan contoh</button>
+      </p>
+    </main>
+  </div>
+
+  <dialog class="sheet" id="sheet" aria-labelledby="sheetTitle">
+    <form class="sheet-form" id="sheetForm" novalidate>
+      <header class="sheet-head">
+        <div>
+          <p class="sheet-kicker" id="sheetKicker"></p>
+          <h2 id="sheetTitle"></h2>
+          <p class="sheet-sub" id="sheetSub"></p>
+        </div>
+        <button class="icon-btn" id="sheetClose" type="button" data-i18n-aria="common.close" aria-label="Tutup">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </header>
+
+      <input type="hidden" id="sheetKind">
+      <input type="hidden" id="sheetRef">
+      <input type="hidden" id="sheetItem">
+
+      <div class="field" id="typeField" hidden>
+        <span class="field-label" data-i18n="sheet.tabTypeLabel">Isi tab</span>
+        <div class="type-options" role="radiogroup" data-i18n-aria="sheet.tabTypeLabel" aria-label="Isi tab">
+          <label class="type-opt">
+            <input type="radio" name="tabType" value="board" checked>
+            <span>
+              <strong data-i18n="type.board">Papan tugas</strong>
+              <small data-i18n="type.boardDesc">Tugas dengan prioritas tinggi, sedang, atau rendah.</small>
+            </span>
+          </label>
+          <label class="type-opt">
+            <input type="radio" name="tabType" value="checklist">
+            <span>
+              <strong data-i18n="type.checklist">Checklist</strong>
+              <small data-i18n="type.checklistDesc">Daftar sederhana yang bisa dicentang.</small>
+            </span>
+          </label>
+          <label class="type-opt">
+            <input type="radio" name="tabType" value="notes">
+            <span>
+              <strong data-i18n="type.notes">Catatan</strong>
+              <small data-i18n="type.notesDesc">Tulisan bebas yang tersimpan otomatis.</small>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="field" id="priorityField" hidden>
+        <label for="sheetPriority" data-i18n="sheet.priority">Prioritas</label>
+        <select id="sheetPriority">
+          <option value="high" data-i18n="prio.high">Tinggi</option>
+          <option value="medium" selected data-i18n="prio.medium">Sedang</option>
+          <option value="low" data-i18n="prio.low">Rendah</option>
+        </select>
+        <p class="field-hint" data-i18n="sheet.priorityHint">Tugas prioritas tinggi selalu muncul paling atas.</p>
+      </div>
+
+      <div class="field" id="timeField">
+        <label for="sheetTime"><span data-i18n="sheet.time">Jam</span> <span class="opt" data-i18n="common.optional">(opsional)</span></label>
+        <input id="sheetTime" type="text" inputmode="numeric" data-i18n-placeholder="sheet.timePlaceholder" placeholder="09.00" autocomplete="off">
+        <p class="field-hint" data-i18n="sheet.timeHint">Format 24 jam, mis. 09.00 atau 13.30.</p>
+      </div>
+
+      <div class="field" id="daysField" hidden>
+        <label for="sheetDays" data-i18n="sheet.days">Perkiraan waktu (hari)</label>
+        <input id="sheetDays" type="number" min="1" max="999" step="1" value="30">
+        <p class="field-hint" data-i18n="sheet.daysHint">Dipakai untuk menampilkan sisa waktu target.</p>
+      </div>
+
+      <div class="field" id="detailField" hidden>
+        <label for="sheetDetail"><span data-i18n="sheet.detail">Deskripsi singkat</span> <span class="opt" data-i18n="common.optional">(opsional)</span></label>
+        <textarea id="sheetDetail" rows="2" maxlength="240" data-i18n-placeholder="sheet.detailPlaceholder" placeholder="Mis. apa yang membuat rencana ini penting"></textarea>
+      </div>
+
+      <div class="field" id="durationField" hidden>
+        <label for="sheetDuration" data-i18n="sheet.duration">Durasi rencana</label>
+        <div class="duration-row">
+          <input id="sheetDuration" type="number" min="1" max="120" step="1" value="2">
+          <select id="sheetDurationUnit" data-i18n-aria="unit.label" aria-label="Satuan durasi">
+            <option value="day" data-i18n="unit.day">Hari</option>
+            <option value="week" data-i18n="unit.week">Minggu</option>
+            <option value="month" selected data-i18n="unit.month">Bulan</option>
+          </select>
+        </div>
+        <p class="field-hint" data-i18n="sheet.durationHint">Dipakai untuk menghitung sisa waktu dan tanggal target.</p>
+      </div>
+
+      <div class="field">
+        <label for="sheetTitleInput" id="sheetLabel">Judul</label>
+        <input id="sheetTitleInput" type="text" required autocomplete="off" maxlength="120">
+      </div>
+
+      <p class="sheet-error" id="sheetError" role="alert" hidden></p>
+
+      <div class="sheet-actions">
+        <button class="btn btn-ghost" id="sheetCancel" type="button" data-i18n="common.cancel">Batal</button>
+        <button class="btn" type="submit" data-i18n="common.save">Simpan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="confirm-sheet" id="confirmDialog" aria-labelledby="confirmTitle" aria-describedby="confirmText">
+    <div class="confirm-card">
+      <span class="confirm-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.7L2.6 17a2 2 0 001.7 3h15.4a2 2 0 001.7-3L13.7 3.7a2 2 0 00-3.4 0z"/></svg>
+      </span>
+      <h2 id="confirmTitle">Hapus tab?</h2>
+      <p id="confirmText"></p>
+      <div class="sheet-actions">
+        <button class="btn btn-ghost" id="confirmCancel" type="button" data-i18n="common.cancel">Batal</button>
+        <button class="btn btn-danger" id="confirmAccept" type="button">Hapus permanen</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="side-backdrop" id="sideBackdrop"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span id="toastText"></span>
+    <button type="button" class="toast-action" id="toastAction" hidden></button>
+  </div>
+
+  <script src="i18n.js?v=2"></script>
+  <script src="dashboard.js?v=8"></script>
+</body>
+</html>
